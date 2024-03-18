@@ -11,11 +11,14 @@ import { useQuery } from "react-query";
 import { getReceivers } from "../../api/receiverApi";
 import { getDestinations } from "../../api/destinationApi";
 import { CreateUpdateModal } from "./CreateUpdateModal";
+import { DeleteModal } from "./DeleteModal";
 
 export const DestinationReceiverComponent = (props) => {
   const [receivers, setReceivers] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState("");
   const { isReceiver } = props;
 
   const { data, isLoading, error, status, refetch } = isReceiver
@@ -24,7 +27,7 @@ export const DestinationReceiverComponent = (props) => {
 
   useEffect(() => {
     if(!showModal) refetch();
-    
+
     if (isReceiver) {
       if (data?.data === undefined) setReceivers([]);
       else setReceivers(data?.data);
@@ -32,12 +35,19 @@ export const DestinationReceiverComponent = (props) => {
       if (data?.data === undefined) setDestinations([]);
       else setDestinations(data?.data);
     }
-  }, [data, status, showModal]);
+  }, [data, status, showModal, setShowDeleteModal]);
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", width: 800 },
     { field: "priority", headerName: "Priority", width: 800 },
   ];
+
+  const rowSelection = (event) => {
+    if(event.length > 0){
+      let name = event[0].split("-", 1);
+      setSelectedRow(name[0]);
+    }
+  }
 
   return (
     <Box component="section">
@@ -80,6 +90,7 @@ export const DestinationReceiverComponent = (props) => {
         <Button
           variant="contained"
           endIcon={<DeleteIcon />}
+          onClick={() => setShowDeleteModal(true)}
           sx={{ marginRight: 1, borderRadius: 2 }}
         >
           Delete
@@ -90,14 +101,15 @@ export const DestinationReceiverComponent = (props) => {
         <DataGrid
           rows={isReceiver ? receivers : destinations}
           columns={columns}
-          getRowId={(row) => row?.name + Math.random()}
+          getRowId={(row) => row?.name + "-"+Math.random()}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 10 },
             },
           }}
           pageSizeOptions={[10, 15]}
-          checkboxSelection
+          rowSelection
+          onRowSelectionModelChange={rowSelection}
           sx={{
             m: 3,
             boxShadow: 2,
@@ -116,6 +128,7 @@ export const DestinationReceiverComponent = (props) => {
         />
       </div>
       <CreateUpdateModal isOpen={showModal} setShowModal={setShowModal} isReceiver={isReceiver}/>
+      <DeleteModal isDeleteOpen={showDeleteModal} setShowDeleteModal={setShowDeleteModal} isReceiver={isReceiver} selectedRow={selectedRow}/>
     </Box>
   );
 };
