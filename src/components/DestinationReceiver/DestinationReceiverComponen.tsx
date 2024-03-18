@@ -1,25 +1,42 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import SortIcon from "@mui/icons-material/Sort";
+import UpdateIcon from "@mui/icons-material/Update";
+import { useQuery } from "react-query";
+import { getReceivers } from "../../api/receiverApi";
+import { getDestinations } from "../../api/destinationApi";
+import { CreateUpdateModal } from "./CreateUpdateModal";
 
 export const DestinationReceiverComponent = (props) => {
-
+  const [receivers, setReceivers] = useState([]);
+  const [destinations, setDestinations] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const { isReceiver } = props;
 
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 300 },
-    { field: "name", headerName: "Name", width: 600 },
-    { field: "priority", headerName: "Priority", width: 600 },
-  ];
+  const { data, isLoading, error, status, refetch } = isReceiver
+    ? useQuery("receivers", getReceivers)
+    : useQuery("destinations", getDestinations);
 
-  const rows = [
-    { id: 1, name: "Houston", priority: 1 },
-    { id: 2, name: "LA", priority: 2 },
+  useEffect(() => {
+    if(!showModal) refetch();
+    
+    if (isReceiver) {
+      if (data?.data === undefined) setReceivers([]);
+      else setReceivers(data?.data);
+    } else {
+      if (data?.data === undefined) setDestinations([]);
+      else setDestinations(data?.data);
+    }
+  }, [data, status, showModal]);
+
+  const columns: GridColDef[] = [
+    { field: "name", headerName: "Name", width: 800 },
+    { field: "priority", headerName: "Priority", width: 800 },
   ];
 
   return (
@@ -34,7 +51,7 @@ export const DestinationReceiverComponent = (props) => {
           color: "#424242",
         }}
       >
-        {isReceiver ? 'Receiver' : 'Destination'}
+        {isReceiver ? "Receiver" : "Destination"}
       </Typography>
 
       <div
@@ -49,15 +66,16 @@ export const DestinationReceiverComponent = (props) => {
           variant="contained"
           endIcon={<AddIcon />}
           sx={{ marginRight: 1, borderRadius: 2 }}
+          onClick={() => setShowModal(true)}
         >
           Add
         </Button>
         <Button
           variant="contained"
-          endIcon={<SortIcon />}
+          endIcon={<UpdateIcon />}
           sx={{ marginRight: 1, borderRadius: 2 }}
         >
-          Sort
+          Update
         </Button>
         <Button
           variant="contained"
@@ -68,16 +86,17 @@ export const DestinationReceiverComponent = (props) => {
         </Button>
       </div>
 
-      <div style={{ height: 500, margin: "auto", width: "90%" }}>
+      <div style={{ height: 700, margin: "auto", width: "90%" }}>
         <DataGrid
-          rows={rows}
+          rows={isReceiver ? receivers : destinations}
           columns={columns}
+          getRowId={(row) => row?.name + Math.random()}
           initialState={{
             pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
+              paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[10, 15]}
           checkboxSelection
           sx={{
             m: 3,
@@ -96,6 +115,7 @@ export const DestinationReceiverComponent = (props) => {
           }}
         />
       </div>
+      <CreateUpdateModal isOpen={showModal} setShowModal={setShowModal} isReceiver={isReceiver}/>
     </Box>
   );
 };

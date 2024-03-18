@@ -8,7 +8,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { CarComponent } from "./components/Car/CarComponent";
 import "./styles.css";
-import { DestinationReceiverComponent } from "./components/DestinationReceiver/DestinationComponen";
+import { DestinationReceiverComponent } from "./components/DestinationReceiver/DestinationReceiverComponen";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 export default function Root() {
