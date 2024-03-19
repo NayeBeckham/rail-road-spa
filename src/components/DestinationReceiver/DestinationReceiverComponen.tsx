@@ -29,7 +29,9 @@ export const DestinationReceiverComponent = (props) => {
 
   useEffect(() => {
     if (!showModal) refetch();
+  }, []);
 
+  useEffect(() => {
     if (isReceiver) {
       if (data?.data === undefined) setReceivers([]);
       else setReceivers(data?.data);
@@ -54,8 +56,7 @@ export const DestinationReceiverComponent = (props) => {
   const handleUpdate = () => {
     setShowUpdateModal(true);
     setIsUpdate(true);
-
-  }
+  };
 
   return (
     <Box component="section">
