@@ -33,7 +33,5 @@ export const updateDestinationByName = async (destination) => {
     priority,
   });
 
-  console.log(response)
-
   return response.data;
 };

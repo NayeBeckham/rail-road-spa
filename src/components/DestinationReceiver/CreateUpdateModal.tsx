@@ -17,7 +17,11 @@ import {
   updateDestinationByName,
 } from "../../api/destinationApi";
 import { Destination } from "../../models/Destination";
-import { createReceiver, getReceiverByName, updateReceiverByName } from '../../api/receiverApi';
+import {
+  createReceiver,
+  getReceiverByName,
+  updateReceiverByName,
+} from "../../api/receiverApi";
 import { Receiver } from "../../models/Receiver";
 
 export const CreateUpdateModal = (props) => {
@@ -33,27 +37,24 @@ export const CreateUpdateModal = (props) => {
     setIsUpdate,
     isUpdate,
     selectedRow,
+    setSelectedRow,
   } = props;
 
   let destination, receiver;
 
   useEffect(() => {
-    if (!isUpdate) setOpen(isOpen);
-    else {
-      if(isReceiver){
-        getReceiver
-        .refetch()
-        .then((data) => 
-        {
+    if (!isUpdate) {
+      setOpen(isOpen);
+      setName("");
+      setPriority("");
+    } else {
+      if (isReceiver) {
+        getReceiver.refetch().then((data) => {
           setName(data.data.name);
           setPriority(data.data.priority);
-        }
-        );
-      }
-      else {
-        getDestination
-        .refetch()
-        .then((data) => {
+        });
+      } else {
+        getDestination.refetch().then((data) => {
           setName(data.data.name);
           setPriority(data.data.priority);
         });
@@ -82,7 +83,8 @@ export const CreateUpdateModal = (props) => {
         type: "destination",
       };
 
-      if(!isUpdate) destination = await destinationMutation.mutateAsync(newDestination);
+      if (!isUpdate)
+        destination = await destinationMutation.mutateAsync(newDestination);
       else {
         let currentDestination: Destination = {
           name: selectedRow,
@@ -90,7 +92,11 @@ export const CreateUpdateModal = (props) => {
           type: "destination",
         };
 
-        destination = await destinationUpdateMutation.mutateAsync({currentDestination, name, priority});
+        destination = await destinationUpdateMutation.mutateAsync({
+          currentDestination,
+          name,
+          priority,
+        });
       }
     } else {
       let newReceiver: Receiver = {
@@ -98,20 +104,25 @@ export const CreateUpdateModal = (props) => {
         priority,
         type: "receiver",
       };
-      if(!isUpdate) receiver = await receiverMutation.mutateAsync(newReceiver);
+      if (!isUpdate) receiver = await receiverMutation.mutateAsync(newReceiver);
       else {
         let currentReceiver: Receiver = {
           name: selectedRow,
           priority,
           type: "receiver",
         };
-  
-        receiver = await receiverUpdateMutation.mutateAsync({currentReceiver, name, priority});
+
+        receiver = await receiverUpdateMutation.mutateAsync({
+          currentReceiver,
+          name,
+          priority,
+        });
       }
     }
-
     setOpen(false);
     setShowModal(false);
+    if (isUpdate) setShowUpdateModal(false);
+    setSelectedRow("");
     setName("");
     setPriority("");
 

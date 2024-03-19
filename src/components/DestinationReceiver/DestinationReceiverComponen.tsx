@@ -29,7 +29,7 @@ export const DestinationReceiverComponent = (props) => {
 
   useEffect(() => {
     if (!showModal) refetch();
-  }, [showModal === false]);
+  }, [!showModal, !showDeleteModal, !showUpdateModal]);
 
   useEffect(() => {
     if (isReceiver) {
@@ -54,8 +54,16 @@ export const DestinationReceiverComponent = (props) => {
   };
 
   const handleUpdate = () => {
+    setShowModal(false);
     setShowUpdateModal(true);
     setIsUpdate(true);
+  };
+
+  const handleAdd = () => {
+    setShowModal(true);
+    setShowUpdateModal(false);
+    setIsUpdate(false);
+    setSelectedRow("");
   };
 
   return (
@@ -85,7 +93,7 @@ export const DestinationReceiverComponent = (props) => {
           variant="contained"
           endIcon={<AddIcon />}
           sx={{ marginRight: 1, borderRadius: 2 }}
-          onClick={() => setShowModal(true)}
+          onClick={handleAdd}
         >
           Add
         </Button>
@@ -146,6 +154,7 @@ export const DestinationReceiverComponent = (props) => {
         isUpdate={isUpdate}
         setIsUpdate={setIsUpdate}
         selectedRow={selectedRow}
+        setSelectedRow={setSelectedRow}
       />
       <DeleteModal
         isDeleteOpen={showDeleteModal}
