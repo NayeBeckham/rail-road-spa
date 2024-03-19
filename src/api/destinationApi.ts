@@ -27,9 +27,9 @@ export const getDestinationByName = async (name) => {
 };
 
 export const updateDestinationByName = async (destination) => {
-  const { newDestination, name, priority } = destination;
+  const { currentDestination, name, priority } = destination;
   const response = await axios.patch(`${API_URL}/destinations/${name}`, {
-    destination: newDestination,
+    destination: currentDestination,
     priority,
   });
 
