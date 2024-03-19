@@ -29,7 +29,7 @@ export const DestinationReceiverComponent = (props) => {
 
   useEffect(() => {
     if (!showModal) refetch();
-  }, []);
+  }, [showModal === false]);
 
   useEffect(() => {
     if (isReceiver) {

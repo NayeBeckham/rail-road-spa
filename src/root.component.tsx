@@ -14,7 +14,15 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
 export default function Root() {
   const queryClient = new QueryClient();
-  const [value, setValue] = React.useState(0);
+
+  const currentTab = () => {
+    let path = window.location.pathname
+    if (path === "/") return 0
+    else if (path === "/destination") return 1
+    else if (path === "/receiver") return 2
+  }
+
+  const [value, setValue] = React.useState(currentTab);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
