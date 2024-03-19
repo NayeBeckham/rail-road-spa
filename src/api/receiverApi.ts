@@ -19,3 +19,20 @@ export const deleteReceiver = async (name) => {
 
   return response;
 };
+
+export const getReceiverByName = async (name) => {
+  const response = await axios.get(`${API_URL}/receivers/${name}`);
+
+  return response.data;
+};
+
+export const updateReceiverByName = async (receiver) => {
+    const { currentReceiver, name, priority } = receiver;
+    const response = await axios.patch(`${API_URL}/receivers/${name}`, {
+        receiver: currentReceiver,
+        priority,
+      });
+  
+    return response;
+  };
+

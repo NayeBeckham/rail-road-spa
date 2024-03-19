@@ -17,7 +17,9 @@ export const DestinationReceiverComponent = (props) => {
   const [receivers, setReceivers] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [selectedRow, setSelectedRow] = useState("");
   const { isReceiver } = props;
 
@@ -26,7 +28,7 @@ export const DestinationReceiverComponent = (props) => {
     : useQuery("destinations", getDestinations);
 
   useEffect(() => {
-    if(!showModal) refetch();
+    if (!showModal) refetch();
 
     if (isReceiver) {
       if (data?.data === undefined) setReceivers([]);
@@ -43,10 +45,16 @@ export const DestinationReceiverComponent = (props) => {
   ];
 
   const rowSelection = (event) => {
-    if(event.length > 0){
+    if (event.length > 0) {
       let name = event[0].split("-", 1);
       setSelectedRow(name[0]);
     }
+  };
+
+  const handleUpdate = () => {
+    setShowUpdateModal(true);
+    setIsUpdate(true);
+
   }
 
   return (
@@ -83,6 +91,7 @@ export const DestinationReceiverComponent = (props) => {
         <Button
           variant="contained"
           endIcon={<UpdateIcon />}
+          onClick={handleUpdate}
           sx={{ marginRight: 1, borderRadius: 2 }}
         >
           Update
@@ -101,7 +110,7 @@ export const DestinationReceiverComponent = (props) => {
         <DataGrid
           rows={isReceiver ? receivers : destinations}
           columns={columns}
-          getRowId={(row) => row?.name + "-"+Math.random()}
+          getRowId={(row) => row?.name + "-" + Math.random()}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 10 },
@@ -127,8 +136,22 @@ export const DestinationReceiverComponent = (props) => {
           }}
         />
       </div>
-      <CreateUpdateModal isOpen={showModal} setShowModal={setShowModal} isReceiver={isReceiver}/>
-      <DeleteModal isDeleteOpen={showDeleteModal} setShowDeleteModal={setShowDeleteModal} isReceiver={isReceiver} selectedRow={selectedRow}/>
+      <CreateUpdateModal
+        isOpen={showModal}
+        setShowModal={setShowModal}
+        isReceiver={isReceiver}
+        isUpdateOpen={showUpdateModal}
+        setShowUpdateModal={setShowUpdateModal}
+        isUpdate={isUpdate}
+        setIsUpdate={setIsUpdate}
+        selectedRow={selectedRow}
+      />
+      <DeleteModal
+        isDeleteOpen={showDeleteModal}
+        setShowDeleteModal={setShowDeleteModal}
+        isReceiver={isReceiver}
+        selectedRow={selectedRow}
+      />
     </Box>
   );
 };

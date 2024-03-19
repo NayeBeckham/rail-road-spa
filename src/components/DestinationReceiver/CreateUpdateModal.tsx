@@ -10,31 +10,69 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect } from "react";
-import { useMutation } from "react-query";
-import { createDestination } from "../../api/destinationApi";
+import { useMutation, useQuery } from "react-query";
+import {
+  createDestination,
+  getDestinationByName,
+  updateDestinationByName,
+} from "../../api/destinationApi";
 import { Destination } from "../../models/Destination";
-import { createReceiver } from "../../api/receiverApi";
+import { createReceiver, getReceiverByName, updateReceiverByName } from '../../api/receiverApi';
 import { Receiver } from "../../models/Receiver";
 
 export const CreateUpdateModal = (props) => {
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState("");
   const [priority, setPriority] = React.useState("");
-  const { isOpen, isReceiver, setShowModal } = props;
+  const {
+    isOpen,
+    isReceiver,
+    setShowModal,
+    isUpdateOpen,
+    setShowUpdateModal,
+    setIsUpdate,
+    isUpdate,
+    selectedRow,
+  } = props;
 
   let destination, receiver;
 
   useEffect(() => {
-    setOpen(isOpen);
-  }, [isOpen]);
+    if (!isUpdate) setOpen(isOpen);
+    else {
+      if(isReceiver){
+        getReceiver
+        .refetch()
+        .then((data) => 
+        {
+          setName(data.data.name);
+          setPriority(data.data.priority);
+        }
+        );
+      }
+      else {
+        getDestination
+        .refetch()
+        .then((data) => {
+          setName(data.data.name);
+          setPriority(data.data.priority);
+        });
+      }
+      setOpen(isUpdateOpen);
+    }
+  }, [isOpen, isUpdateOpen]);
 
   const handleClose = () => {
     setOpen(false);
     setShowModal(false);
+    setShowUpdateModal(false);
+    setIsUpdate(false);
   };
 
   const destinationMutation = useMutation(createDestination);
+  const destinationUpdateMutation = useMutation(updateDestinationByName);
   const receiverMutation = useMutation(createReceiver);
+  const receiverUpdateMutation = useMutation(updateReceiverByName);
 
   const handleSave = async (name, priority) => {
     if (!isReceiver) {
@@ -44,15 +82,32 @@ export const CreateUpdateModal = (props) => {
         type: "destination",
       };
 
-      destination = await destinationMutation.mutateAsync(newDestination);
+      if(!isUpdate) destination = await destinationMutation.mutateAsync(newDestination);
+      else {
+        let currentDestination: Destination = {
+          name: selectedRow,
+          priority,
+          type: "destination",
+        };
+
+        destination = await destinationUpdateMutation.mutateAsync({currentDestination, name, priority});
+      }
     } else {
       let newReceiver: Receiver = {
         name,
         priority,
         type: "receiver",
       };
-
-      receiver = await receiverMutation.mutateAsync(newReceiver);
+      if(!isUpdate) receiver = await receiverMutation.mutateAsync(newReceiver);
+      else {
+        let currentReceiver: Receiver = {
+          name: selectedRow,
+          priority,
+          type: "receiver",
+        };
+  
+        receiver = await receiverUpdateMutation.mutateAsync({currentReceiver, name, priority});
+      }
     }
 
     setOpen(false);
@@ -71,6 +126,22 @@ export const CreateUpdateModal = (props) => {
   const handlePriorityTextInputChange = (event) => {
     setPriority(event.target.value);
   };
+
+  const getReceiver = useQuery(
+    "getReceiverByName",
+    () => getReceiverByName(selectedRow),
+    {
+      enabled: false,
+    }
+  );
+
+  const getDestination = useQuery(
+    "getDestinationByName",
+    () => getDestinationByName(selectedRow),
+    {
+      enabled: false,
+    }
+  );
 
   const style = {
     position: "absolute" as "absolute",
@@ -103,7 +174,8 @@ export const CreateUpdateModal = (props) => {
             component="h2"
             sx={{ marginTop: "-30px" }}
           >
-            {isReceiver ? "Create Receiver" : "Create Destination"}
+            {isUpdate ? "Update " : "Create "}
+            {isReceiver ? "Receiver" : "Destination"}
           </Typography>
           <Typography
             id="modal-modal-description"
@@ -170,7 +242,7 @@ export const CreateUpdateModal = (props) => {
               }}
               onClick={() => handleSave(name, priority)}
             >
-              Save
+              {isUpdate ? "Update" : "Save"}
             </Button>
           </div>
         </Box>

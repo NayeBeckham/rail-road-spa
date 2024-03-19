@@ -19,3 +19,21 @@ export const deleteDestination = async (name) => {
 
   return response;
 };
+
+export const getDestinationByName = async (name) => {
+  const response = await axios.get(`${API_URL}/destinations/${name}`);
+
+  return response.data;
+};
+
+export const updateDestinationByName = async (destination) => {
+  const { newDestination, name, priority } = destination;
+  const response = await axios.patch(`${API_URL}/destinations/${name}`, {
+    destination: newDestination,
+    priority,
+  });
+
+  console.log(response)
+
+  return response.data;
+};
