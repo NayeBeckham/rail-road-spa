@@ -1,5 +1,5 @@
 export interface Destination {
     name: string;
-    type: string;
+    type?: string;
     priority: number;
 }

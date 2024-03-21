@@ -56,6 +56,7 @@
     "prettier": "^2.3.2",
     "pretty-quick": "^3.1.1",
     "storybook": "^8.0.0",
+    "storybook-addon-mock": "^4.3.0",
     "ts-config-single-spa": "^3.0.0",
     "typescript": "^4.3.5",
     "webpack": "^5.89.0",
@@ -90,5 +91,8 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }
