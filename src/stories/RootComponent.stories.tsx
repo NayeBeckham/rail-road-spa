@@ -2,6 +2,7 @@ import * as React from "react";
 import type { Meta, StoryObj } from '@storybook/react';
 import Root from '../root.component';
 import { QueryClient, QueryClientProvider } from "react-query";
+import { mockedGetDestinations, mockedGetReceivers } from "../__mocks__/handlers";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: Infinity, refetchOnMount: true } },
@@ -26,4 +27,12 @@ export const RootComponentStory: Story = {
         </QueryClientProvider>
     ),
   ],
+  parameters: {
+    msw: {
+      handlers: [
+        mockedGetReceivers, 
+        mockedGetDestinations,
+      ]
+    }
+  }
 };
