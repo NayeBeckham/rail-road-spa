@@ -2,7 +2,7 @@ import * as React from "react";
 import type { Meta, StoryObj } from '@storybook/react';
 import { DestinationReceiverComponent } from '../components/DestinationReceiver/DestinationReceiverComponen';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { mockedGetReceivers } from "../__mocks__/handlers";
+import { mockedGetReceivers, mockedGetReceiversError } from "../__mocks__/handlers";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: Infinity, refetchOnMount: true } },
@@ -32,6 +32,27 @@ export const ReceiverComponentStory: Story = {
     msw: {
       handlers: [
         mockedGetReceivers
+      ]
+    }
+  }
+};
+
+export const ReceiverComponentStoryError: Story = {
+  args: {
+    //👇 The args you need here will depend on your component
+    isReceiver: true
+  },
+  decorators: [
+    (Story) => (
+      <QueryClientProvider client={queryClient}>
+        {Story()}
+        </QueryClientProvider>
+    ),
+  ],
+  parameters: {
+    msw: {
+      handlers: [
+        mockedGetReceiversError
       ]
     }
   }

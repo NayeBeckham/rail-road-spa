@@ -9,3 +9,9 @@ export const mockDestinationTableRows: Destination[] = [
   { name: "Texas", priority: 1, type: "destination" },
   { name: "San Diego", priority: 1, type: "destination" },
 ];
+
+export const mockDestinationAtCreate: Destination = {
+  name: "Las Vegas",
+  priority: 1,
+  type: "destination",
+};
